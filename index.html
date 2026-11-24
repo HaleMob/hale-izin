@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1F7A5C">
+<title>Hale Mobilya · Yıllık İzin</title>
+<style>
+:root{
+  --navy:#1F7A5C; --navy-d:#145440; --navy-l:#E5F4ED; --navy-m:#BDE3D1;
+  --ink:#15202b; --ink-2:#3d4a57; --muted:#6c7884; --line:#e3e8ee; --bg:#F2F6F4; --card:#fff;
+  --ok:#1d7a46; --ok-bg:#e6f4ec; --warn:#9a6300; --warn-bg:#fdf3dd; --bad:#b3261e; --bad-bg:#fbe9e7; --gray-bg:#eef0f3;
+  --r:14px; --sh:0 1px 2px rgba(16,32,48,.06),0 4px 16px rgba(16,32,48,.06);
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+.num{font-variant-numeric:tabular-nums}
+a{color:var(--navy)}
+
+/* ---------- header / nav ---------- */
+.top{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;padding:calc(env(safe-area-inset-top) + 10px) 16px 10px;display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:baseline;gap:8px;font-weight:800;letter-spacing:.14em;font-size:15px;white-space:nowrap}
+.brand small{font-weight:500;letter-spacing:.02em;opacity:.75;font-size:13px}
+.tabs{display:none;gap:4px;margin-left:12px}
+.tabs button{background:none;border:0;color:#fff;opacity:.72;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600;display:flex;gap:6px;align-items:center}
+.tabs button.on{opacity:1;background:rgba(255,255,255,.14)}
+.tabs button:hover{opacity:1}
+.who{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px}
+.who .av{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.18);display:grid;place-items:center;font-weight:700;font-size:12px}
+.who .nm{display:none;text-align:right;line-height:1.2}
+.who .nm b{display:block;font-size:13px}
+.who .nm span{opacity:.7;font-size:12px}
+.iconbtn{background:rgba(255,255,255,.12);border:0;color:#fff;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;cursor:pointer}
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:20;background:#fff;border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+.bnav button{flex:1;background:none;border:0;padding:8px 2px 9px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;position:relative}
+.bnav button.on{color:var(--navy)}
+.bnav button.on::before{content:"";position:absolute;top:0;left:30%;right:30%;height:3px;border-radius:0 0 3px 3px;background:var(--navy)}
+.badge{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#d93025;color:#fff;font-size:11px;font-weight:700;display:inline-grid;place-items:center;line-height:1}
+.bnav .badge{position:absolute;top:3px;left:calc(50% + 6px)}
+main{max-width:1120px;margin:0 auto;padding:16px 14px 96px}
+@media (min-width:860px){
+  .tabs{display:flex} .bnav{display:none} main{padding:24px 24px 48px} .who .nm{display:block}
+}
+
+/* ---------- generic ---------- */
+h1{font-size:22px;margin:4px 0 2px;letter-spacing:-.01em}
+h2{font-size:16px;margin:0 0 10px}
+.sub{color:var(--muted);font-size:13px;margin:0 0 16px}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:16px;margin-bottom:14px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.sp{flex:1}
+.grid{display:grid;gap:14px}
+@media (min-width:860px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1.3fr 1fr}}
+.btn{border:0;border-radius:12px;min-height:44px;padding:0 16px;font-weight:650;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--navy-l);color:var(--navy);white-space:nowrap}
+.btn.p{background:var(--navy);color:#fff}
+.btn.ok{background:var(--ok);color:#fff}
+.btn.bad{background:var(--bad-bg);color:var(--bad)}
+.btn.ghost{background:none;color:var(--ink-2)}
+.btn.sm{min-height:34px;padding:0 12px;font-size:13px;border-radius:10px}
+.btn.block{width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:650;white-space:nowrap}
+.chip.bekliyor{background:var(--warn-bg);color:var(--warn)}
+.chip.onaylandi{background:var(--ok-bg);color:var(--ok)}
+.chip.reddedildi{background:var(--bad-bg);color:var(--bad)}
+.chip.iptal,.chip.n{background:var(--gray-bg);color:var(--ink-2)}
+.chip.flag{background:var(--warn-bg);color:var(--warn);font-weight:600}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.empty{color:var(--muted);text-align:center;padding:26px 10px;font-size:14px}
+.note{background:var(--navy-l);color:var(--navy-d);border-radius:12px;padding:10px 12px;font-size:13px}
+.note.w{background:var(--warn-bg);color:#6b4500}
+.note.b{background:var(--bad-bg);color:var(--bad)}
+hr{border:0;border-top:1px solid var(--line);margin:14px 0}
+svg.i{width:18px;height:18px;flex:none}
+
+/* ---------- hero balance ---------- */
+.hero{background:linear-gradient(135deg,var(--navy) 0%,#38A67D 100%);color:#fff;border-radius:18px;padding:20px;box-shadow:0 8px 28px rgba(31,122,92,.28);margin-bottom:14px}
+.hero .lbl{font-size:13px;opacity:.8}
+.hero .big{font-size:54px;font-weight:800;line-height:1;letter-spacing:-.02em;margin:6px 0 2px}
+.hero .big small{font-size:18px;font-weight:600;opacity:.8;margin-left:4px}
+.bar{height:8px;border-radius:6px;background:rgba(255,255,255,.2);overflow:hidden;display:flex;gap:2px;margin:14px 0 10px}
+.bar i{display:block;height:100%}
+.hero .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.hero .stats div{background:rgba(255,255,255,.1);border-radius:12px;padding:9px 10px}
+.hero .stats b{display:block;font-size:19px}
+.hero .stats span{font-size:12px;opacity:.8}
+.nexthak{margin-top:12px;font-size:13px;opacity:.9;display:flex;gap:6px;align-items:center}
+
+/* ---------- request list ---------- */
+.req{display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--line);align-items:flex-start}
+.req:first-child{border-top:0;padding-top:2px}
+.req .dt{width:50px;flex:none;text-align:center;background:var(--navy-l);border-radius:10px;padding:6px 0;color:var(--navy)}
+.req .dt b{display:block;font-size:19px;line-height:1}
+.req .dt span{font-size:11px;font-weight:700;text-transform:uppercase}
+.req .bd{flex:1;min-width:0}
+.req .t{font-weight:650}
+.req .m{font-size:13px;color:var(--muted)}
+
+/* ---------- KPI / stat tiles ---------- */
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:14px}
+@media (min-width:860px){.kpis{grid-template-columns:repeat(4,1fr)}}
+.kpi{background:#fff;border-radius:var(--r);box-shadow:var(--sh);padding:14px 16px;cursor:default}
+.kpi .l{font-size:12.5px;color:var(--muted);font-weight:600}
+.kpi .v{font-size:30px;font-weight:800;letter-spacing:-.02em;margin-top:2px;color:var(--ink)}
+.kpi .v small{font-size:14px;color:var(--muted);font-weight:600;margin-left:3px}
+.kpi .h{font-size:12px;color:var(--muted)}
+.kpi.click{cursor:pointer}.kpi.click:hover{outline:2px solid var(--navy-m)}
+
+/* horizontal bars */
+.hb{display:grid;grid-template-columns:120px 1fr 52px;gap:8px 10px;align-items:center;font-size:13px}
+.hb .tr{height:22px;position:relative}
+.hb .fill{position:absolute;left:0;top:3px;bottom:3px;border-radius:0 4px 4px 0;background:var(--navy);min-width:2px}
+.hb .fill:hover{background:#38A67D}
+.hb .v{text-align:right;font-weight:700}
+
+/* people table / list */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.seg{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.seg button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;color:var(--ink-2)}
+.seg button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.search{flex:1;min-width:180px;height:38px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:#fff}
+.pl .ph,.pl .pr{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:11px 4px;border-top:1px solid var(--line);align-items:center}
+.pl .ph{display:none}
+.pl .pr{cursor:pointer}
+.pl .pr:hover{background:#f8fafc}
+.pl .c-n{font-weight:650}
+.pl .c-meta{grid-column:1;font-size:12.5px;color:var(--muted)}
+.pl .c-k{grid-row:1/3;grid-column:2;text-align:right}
+.pl .c-k b{font-size:20px;display:block;line-height:1.1}
+.pl .c-k span{font-size:11px;color:var(--muted)}
+.pl .hide-m{display:none}
+@media (min-width:860px){
+  .pl .ph,.pl .pr{grid-template-columns:1.6fr 1fr 1fr .8fr .6fr .6fr .6fr 1fr;gap:10px}
+  .pl .ph{display:grid;font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.03em;border-top:0}
+  .pl .c-meta{display:none}
+  .pl .hide-m{display:block}
+  .pl .c-k{grid-row:auto;grid-column:auto}
+  .pl .c-k span{display:none}
+  .pl .r{text-align:right}
+}
+
+/* approval card */
+.ap{border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;background:#fff}
+.ap .hd{display:flex;gap:10px;align-items:center}
+.ap .av{width:40px;height:40px;border-radius:50%;background:var(--navy-l);color:var(--navy);display:grid;place-items:center;font-weight:800;flex:none}
+.ap .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.ap .facts div{background:var(--bg);border-radius:10px;padding:8px 10px}
+.ap .facts b{display:block;font-size:16px}
+.ap .facts span{font-size:11.5px;color:var(--muted)}
+.ap textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-height:42px;resize:vertical;margin-bottom:10px}
+
+/* forms */
+.f{display:grid;gap:12px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fld label{display:block;font-size:12.5px;font-weight:650;color:var(--ink-2);margin-bottom:5px}
+.fld input,.fld select,.fld textarea{width:100%;height:44px;border:1px solid #d4dbe3;border-radius:11px;padding:0 12px;background:#fff}
+.fld textarea{height:auto;min-height:70px;padding:10px 12px;resize:vertical}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:2px solid var(--navy);outline-offset:-1px;border-color:var(--navy)}
+.fld .hint{font-size:12px;color:var(--muted);margin-top:4px}
+.chk{display:flex;gap:10px;align-items:center;font-size:14px}
+.chk input{width:20px;height:20px;accent-color:var(--navy)}
+.htsel{height:34px;border:1px solid #d4dbe3;border-radius:9px;padding:0 8px;background:#fff;font-size:13px;font-weight:600;cursor:pointer}
+.htsel.unset{border-color:#e9b949;background:var(--warn-bg);color:var(--warn)}
+.calc{background:var(--navy-l);border-radius:14px;padding:14px;display:flex;gap:14px;align-items:center}
+.calc .n{font-size:40px;font-weight:800;color:var(--navy);line-height:1}
+.calc .n small{font-size:14px;font-weight:650;margin-left:3px}
+.calc .d{font-size:13px;color:var(--ink-2)}
+
+/* modal */
+.ov{position:fixed;inset:0;background:rgba(10,22,36,.45);z-index:50;display:flex;align-items:flex-end;justify-content:center;animation:fd .15s}
+.md{background:#fff;width:100%;max-width:620px;max-height:92vh;overflow:auto;border-radius:20px 20px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));animation:up .2s ease-out}
+@media (min-width:700px){.ov{align-items:center}.md{border-radius:20px}}
+.md .mh{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.md .mh h2{margin:0;font-size:18px}
+.md .x{margin-left:auto;background:var(--bg);border:0;width:34px;height:34px;border-radius:10px;cursor:pointer;display:grid;place-items:center}
+@keyframes up{from{transform:translateY(30px);opacity:0}}
+@keyframes fd{from{opacity:0}}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;color:var(--muted);font-weight:650;font-size:12px;padding:6px 6px;border-bottom:1px solid var(--line)}
+.tbl td{padding:7px 6px;border-bottom:1px solid var(--line)}
+.tbl .r{text-align:right}
+
+/* toast */
+.toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:84px;z-index:60;display:grid;gap:8px;width:min(92vw,460px)}
+@media (min-width:860px){.toasts{bottom:24px}}
+.toast{background:#13212f;color:#fff;border-radius:12px;padding:11px 14px;font-size:13.5px;box-shadow:0 8px 24px rgba(0,0,0,.25);display:flex;gap:10px;align-items:flex-start;animation:up .2s}
+.toast svg{flex:none;margin-top:1px}
+
+/* login */
+.login{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(1200px 600px at 20% -10%,#4DB88E 0%,var(--navy) 45%,var(--navy-d) 100%)}
+.lg{background:#fff;border-radius:22px;padding:26px 22px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.lg .mark{width:56px;height:56px;border-radius:16px;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:900;letter-spacing:.06em;font-size:15px;margin-bottom:14px}
+.busy::after{content:"";position:fixed;left:0;right:0;top:0;height:3px;z-index:99;background:linear-gradient(90deg,transparent,#7fd6b2,transparent);background-size:40% 100%;background-repeat:no-repeat;animation:ld 1s linear infinite}
+.busy{cursor:progress}.busy .md button,.busy main button{pointer-events:none;opacity:.7}
+@keyframes ld{from{background-position:-40% 0}to{background-position:140% 0}}
+.demo{display:inline-block;background:var(--warn-bg);color:var(--warn);font-size:11.5px;font-weight:700;border-radius:6px;padding:2px 7px;margin-bottom:8px}
+.qk{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.qk button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 10px;font-size:12px;cursor:pointer}
+
+/* print form */
+#print{display:none}
+@media print{
+  @page{size:A4;margin:14mm}
+  body *{visibility:hidden}
+  #print,#print *{visibility:visible}
+  #print{display:block;position:absolute;left:0;top:0;width:100%}
+  .top,.bnav,main,.toasts,.ov{display:none!important}
+  html,body{background:#fff}
+}
+.pf{font-size:11.5pt;color:#111;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.pf .ph{display:flex;align-items:center;background:#1F7A5C;color:#fff;padding:12px 16px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pf .ph .w{font-weight:900;letter-spacing:.18em;font-size:16pt}
+.pf .ph .c{margin-left:auto;text-align:right;font-size:8.5pt;opacity:.9}
+.pf h3{text-align:center;font-size:14pt;letter-spacing:.06em;margin:18px 0 4px}
+.pf .no{text-align:center;font-size:9pt;color:#555;margin-bottom:14px}
+.pf table{width:100%;border-collapse:collapse;margin-bottom:12px}
+.pf td,.pf th{border:1px solid #9aa7b4;padding:6px 8px;font-size:10.5pt;vertical-align:top}
+.pf th{background:#EAF5F0;text-align:left;width:38%;font-weight:600;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pf .sec{font-weight:800;font-size:10pt;color:#1F7A5C;letter-spacing:.05em;margin:12px 0 5px}
+.pf .sig{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+.pf .sig div{border:1px solid #9aa7b4;padding:8px;min-height:105px;font-size:9.5pt}
+.pf .sig b{display:block;font-size:9.5pt;margin-bottom:4px}
+.pf .lgl{font-size:8.5pt;color:#555;margin-top:14px;line-height:1.4}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="print"></div>
+<div class="toasts" id="toasts"></div>
+
+<script>
+/* =====================================================================
+   HALE MOBİLYA · YILLIK İZİN TAKİP — PROTOTİP
+   Veri katmanı (api) şimdilik tarayıcıda çalışıyor; canlıya geçişte
+   aynı fonksiyonlar Google Apps Script'e fetch ile bağlanacak.
+   ===================================================================== */
+
+/* ======================================================================
+   AYAR: Apps Script "Web uygulaması" adresini aşağıya yapıştırın
+   (Dağıt > Dağıtımları yönet > Web uygulaması URL'si, .../exec ile biter)
+   ====================================================================== */
+const API_URL = 'BURAYA_WEB_UYGULAMASI_ADRESINI_YAPISTIRIN';
+
+let TATILLER = {};   // sunucudan gelir (Tatiller sayfası)
+
+const htVar = v => v !== null && v !== undefined && v !== '';
+const htAd = v => htVar(v) ? GUNLER[+v] : 'Belirlenmedi';
+const GUNLER = ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
+const AYLAR = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+const BIRIMLER = ['OPTIMALL','TALAS','KUMSMALL','MONDİ','DEPO & SEVKİYAT','YÖNETİM'];
+const ROLLER = {personel:'Personel',yonetici:'Birim Yöneticisi',admin:'Yönetici (Admin)',onayci:'Sadece Onaycı'};
+
+const BIRIM_YONETICI = {'OPTIMALL':'hacer','TALAS':'ozgul','MONDİ':'zeliha','KUMSMALL':'ahmet','DEPO & SEVKİYAT':'nurhan','YÖNETİM':'ahmet'};
+
+/* ---------- Tarih yardımcıları ---------- */
+const pad = n => String(n).padStart(2,'0');
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const P = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y,m-1,d); };
+const TODAY = (() => { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); })();
+const TODAY_ISO = iso(TODAY);
+const addDays = (s,n) => { const d = P(s); d.setDate(d.getDate()+n); return iso(d); };
+const addYears = (s,n) => { const d = P(s); const t = new Date(d.getFullYear()+n, d.getMonth(), d.getDate()); if (t.getMonth() !== d.getMonth()) t.setDate(0); return t; };
+const fmt = s => { if(!s) return '—'; const d = P(s); return `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}`; };
+const fmtK = s => { const d = P(s); return `${d.getDate()} ${AYLAR[d.getMonth()]}`; };
+const yas = (dob, at) => { const b = P(dob); let a = at.getFullYear()-b.getFullYear(); if (at.getMonth()<b.getMonth() || (at.getMonth()===b.getMonth() && at.getDate()<b.getDate())) a--; return a; };
+const kidem = (giris, at=TODAY) => { if(!giris) return '—'; const g=P(giris); let m=(at.getFullYear()-g.getFullYear())*12+(at.getMonth()-g.getMonth()); if(at.getDate()<g.getDate()) m--; if(m<0) return 'Başlamadı'; const y=Math.floor(m/12), r=m%12; return (y?y+' yıl ':'')+(r||!y? r+' ay':'').trim(); };
+const gunTxt = n => (Math.round(n*2)/2).toLocaleString('tr-TR');
+const esc = s => String(s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const initials = ad => ad.split(' ').filter(Boolean).map(w=>w[0]).slice(0,2).join('').toLocaleUpperCase('tr');
+
+/* ---------- İzin kuralları (4857 s. İş Kanunu md. 53–56) ---------- */
+function kademe(p, k, tarih){
+  let gun = k <= 5 ? 14 : (k < 15 ? 20 : 26);
+  let neden = k <= 5 ? '1–5 yıl' : (k < 15 ? '5–15 yıl' : '15 yıl ve üzeri');
+  if (p.dogum){
+    const a = yas(p.dogum, tarih);
+    if ((a <= 18 || a >= 50) && gun < 20){ gun = 20; neden += ` · ${a} yaş, en az 20 gün`; }
+  }
+  return {gun, neden};
+}
+function hakedisler(p, asOf = TODAY){
+  const list = [];
+  if (!p.giris) return list;
+  const son = p.cikis ? P(p.cikis) : null;
+  for (let k = 1; k < 80; k++){
+    const t = addYears(p.giris, k);
+    if (t > asOf || (son && t > son)) break;
+    list.push({k, tarih: iso(t), ...kademe(p, k, t)});
+  }
+  return list;
+}
+function sonrakiHakedis(p){
+  if (!p.giris || !p.aktif) return null;
+  const k = hakedisler(p).length + 1, t = addYears(p.giris, k);
+  return {k, tarih: iso(t), ...kademe(p, k, t)};
+}
+/* İzin gün sayısı: hafta tatili ve tam gün resmi tatiller sayılmaz, arife 0,5 */
+function izinHesap(bas, bit, haftaTatili){
+  const r = {gun:0, hafta:0, tatil:[], yarim:[], gecersiz:false, donus:null};
+  if (!bas || !bit || bit < bas){ r.gecersiz = true; return r; }
+  for (let s = bas; s <= bit; s = addDays(s,1)){
+    const dow = P(s).getDay(), t = TATILLER[s];
+    if (htVar(haftaTatili) && dow === +haftaTatili) r.hafta++;
+    else if (t && !t[1]) r.tatil.push(s);
+    else if (t && t[1]) { r.gun += .5; r.yarim.push(s); }
+    else r.gun++;
+  }
+  let d = addDays(bit,1);
+  for (let i=0;i<20;i++){ const t=TATILLER[d]; if (!(htVar(haftaTatili) && P(d).getDay() === +haftaTatili) && !(t && !t[1])) break; d = addDays(d,1); }
+  r.donus = d;
+  return r;
+}
+
+/* ---------- Sunucu bağlantısı (Google Apps Script) ---------- */
+const TKEY = 'haleIzin.token';
+let S = {people:[], requests:[], user:null}, TOKEN = null, SIFRE_ZORUNLU = false, SON_YUKLEME = 0;
+const lsGet = k => { try{ return localStorage.getItem(k); }catch(e){ return null; } };
+const lsSet = (k,v) => { try{ v===null ? localStorage.removeItem(k) : localStorage.setItem(k,v); }catch(e){} };
+const apiHazir = () => /^https:\/\/script\.google(usercontent)?\.com\//.test(API_URL);
+function busy(on){ document.body.classList.toggle('busy', !!on); }
+function uygula(j){ S.people = j.people; S.requests = j.requests; TATILLER = j.tatiller || {}; S.user = j.me; SON_YUKLEME = Date.now(); }
+async function call(islem, data = {}, sessiz = false){
+  if (!apiHazir()) throw new Error('Uygulama henüz sunucuya bağlanmamış (API_URL tanımlı değil).');
+  if (!sessiz) busy(true);
+  try {
+    let res;
+    try { res = await fetch(API_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({...data, islem, token: TOKEN})}); }
+    catch(e){ throw new Error('Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edin.'); }
+    let j; try { j = await res.json(); } catch(e){ throw new Error('Sunucudan beklenmeyen yanıt geldi. Biraz sonra tekrar deneyin.'); }
+    if (j.hata === 'OTURUM'){ oturumBitti(); throw new Error('Oturumunuz sona erdi, lütfen tekrar giriş yapın.'); }
+    if (j.hata) throw new Error(j.hata);
+    if (j.people) uygula(j);
+    return j;
+  } finally { if (!sessiz) busy(false); }
+}
+async function run(fn){ try { await fn(); } catch(e){ toast(esc(e.message), 'warn'); } }
+function oturumBitti(){ TOKEN = null; lsSet(TKEY, null); S = {people:[], requests:[], user:null}; closeModal(); render(); }
+
+const api = {
+  person: id => S.people.find(p => p.id === id),
+  people: (f = () => true) => S.people.filter(f),
+  requestsOf: pid => S.requests.filter(r => r.personelId === pid && !r.digerBirim).sort((a,b) => b.bas.localeCompare(a.bas))
+};
+
+/* ---------- Hesaplanan bakiye ---------- */
+function bakiye(p){
+  const hk = hakedisler(p), hak = hk.reduce((s,h)=>s+h.gun,0);
+  const rq = S.requests.filter(r => r.personelId === p.id);
+  const kullanilan = rq.filter(r=>r.durum==='onaylandi').reduce((s,r)=>s+r.gun,0);
+  const bekleyen = rq.filter(r=>r.durum==='bekliyor').reduce((s,r)=>s+r.gun,0);
+  const kalan = hak - (+p.oncekiKullanim||0) - kullanilan;
+  return {hak, hk, onceki:+p.oncekiKullanim||0, kullanilan, bekleyen, kalan, kullanilabilir: kalan - bekleyen, sonraki: sonrakiHakedis(p)};
+}
+const me = () => api.person(S.user);
+const onayciAdi = p => (api.person(p.onayci)||{}).ad || '—';
+const isApprover = u => ['admin','yonetici','onayci'].includes(u.rol) || S.people.some(p => p.aktif && p.onayci === u.id);
+const canManage = (u, p) => u.rol === 'admin' || p.onayci === u.id;
+const bekleyenler = u => S.requests.filter(r => r.durum==='bekliyor' && (r.onayciId===u.id)).length;
+const cakisanlar = r => { const p = api.person(r.personelId); return S.requests.filter(x => x.id!==r.id && ['onaylandi','bekliyor'].includes(x.durum) && x.bas <= r.bit && x.bit >= r.bas && (api.person(x.personelId)||{}).birim === p.birim); };
+const izindeMi = p => S.requests.some(r => r.personelId===p.id && r.durum==='onaylandi' && r.bas<=TODAY_ISO && r.bit>=TODAY_ISO);
+
+/* ---------- İkonlar ---------- */
+const I = {
+  cal:'<path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/>',
+  ok:'<path d="m5 12 5 5 9-10"/>',
+  inbox:'<path d="M4 13h4l2 3h4l2-3h4M5 5h14l1 8v6H4v-6l1-8Z"/>',
+  users:'<path d="M16 19v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1M9.5 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM21 19v-1a4 4 0 0 0-3-3.9M15.5 4.2a3 3 0 0 1 0 5.6"/>',
+  chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  out:'<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/>',
+  print:'<path d="M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v7H7z"/>',
+  x:'<path d="M6 6l12 12M18 6 6 18"/>',
+  mail:'<path d="M4 6h16v12H4zM4 7l8 6 8-6"/>',
+  gift:'<path d="M20 12v8H4v-8M2 8h20v4H2zM12 8v12M12 8S10 3 7.5 4.5 9 8 12 8Zm0 0s2-5 4.5-3.5S15 8 12 8Z"/>',
+  warn:'<path d="M12 4 2 20h20L12 4Zm0 6v4m0 3v.5"/>',
+  dl:'<path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/>',
+  edit:'<path d="M4 20h4L19 9l-4-4L4 16v4Z"/>'
+};
+const ic = (n, s=18) => `<svg class="i" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${I[n]}</svg>`;
+
+/* ---------- UI: toast & modal ---------- */
+function toast(html, icon='mail'){
+  const t = document.createElement('div'); t.className='toast'; t.innerHTML = ic(icon)+'<div>'+html+'</div>';
+  document.getElementById('toasts').appendChild(t); setTimeout(()=>t.remove(), 5200);
+}
+function modal(title, body){
+  closeModal();
+  const o = document.createElement('div'); o.className='ov'; o.id='ov';
+  o.innerHTML = `<div class="md" role="dialog" aria-modal="true"><div class="mh"><h2>${title}</h2><button class="x" onclick="closeModal()" aria-label="Kapat">${ic('x')}</button></div>${body}</div>`;
+  o.addEventListener('click', e => { if (e.target === o) closeModal(); });
+  document.body.appendChild(o);
+}
+function closeModal(){ const o = document.getElementById('ov'); if (o) o.remove(); }
+document.addEventListener('keydown', e => { if (e.key==='Escape') closeModal(); });
+
+/* ---------- Router ---------- */
+let VIEW = null, PANEL_F = {birim:'TÜMÜ', q:'', sirala:'ad'}, PERS_F = {aktif:true, q:''}, ONAY_TUMU = false;
+function navFor(u){
+  const n = [];
+  if (u.izinTakip) n.push(['izinlerim','İzinlerim','cal']);
+  if (isApprover(u)) n.push(['onay','Onaylar','inbox']);
+  if (u.rol === 'yonetici') n.push(['ekip','Ekibim','users']);
+  if (u.rol === 'admin'){ n.push(['panel','Panel','chart']); n.push(['personel','Personel','users']); }
+  return n;
+}
+function go(v){ VIEW = v; render(); window.scrollTo(0,0); }
+
+function render(){
+  const app = document.getElementById('app');
+  if (!S.user || !me()){ app.innerHTML = viewLogin(); setTimeout(()=>{ const i = document.getElementById('lu'); if (i && !i.value) i.focus(); }, 30); return; }
+  if (SIFRE_ZORUNLU){ app.innerHTML = viewSifre(true); return; }
+  const u = me(), nav = navFor(u);
+  if (!VIEW || !nav.some(n=>n[0]===VIEW)) VIEW = nav[0][0];
+  const b = bekleyenler(u);
+  const navBtns = cls => nav.map(([k,t,i]) => `<button class="${VIEW===k?'on':''}" onclick="go('${k}')">${ic(i, cls?22:18)}<span>${t}</span>${k==='onay'&&b?`<span class="badge">${b}</span>`:''}</button>`).join('');
+  app.innerHTML = `
+    <header class="top">
+      <div class="brand">HALE <small>Yıllık İzin</small></div>
+      <nav class="tabs">${navBtns(false)}</nav>
+      <button class="who" onclick="hesabim()" title="Hesabım" style="background:none;border:0;color:inherit;cursor:pointer;padding:0"><div class="nm"><b>${esc(u.ad)}</b><span>${esc(ROLLER[u.rol])}</span></div><div class="av">${initials(u.ad)}</div></button>
+      <button class="iconbtn" title="Yenile" onclick="run(async()=>{await call('veri');render();toast('Veriler güncellendi.','ok')})"><svg class="i" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg></button>
+    </header>
+    <main>${({izinlerim:viewMine, onay:viewOnay, ekip:viewEkip, panel:viewPanel, personel:viewPersonel})[VIEW]()}</main>
+    ${nav.length>1?`<nav class="bnav">${navBtns(true)}</nav>`:''}`;
+}
+
+/* ---------- Giriş ---------- */
+function viewLogin(){
+  return `<div class="login"><div class="lg">
+    <div class="mark">HALE</div>
+    <h1 style="margin:0 0 4px">Yıllık İzin</h1>
+    <p class="sub">Hale Mobilya personel izin talep ve onay sistemi</p>
+    ${apiHazir() ? '' : '<div class="note b" style="margin-bottom:12px">Kurulum tamamlanmadı: index.html içindeki API_URL satırına Apps Script web uygulaması adresini yapıştırın.</div>'}
+    <form class="f" onsubmit="girisYap(event)">
+      <div class="fld"><label for="lu">Kullanıcı adı</label><input id="lu" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="ad.soyad" required></div>
+      <div class="fld"><label for="lp">Şifre</label><input id="lp" type="password" autocomplete="current-password" required></div>
+      <button class="btn p block" type="submit">Giriş yap</button>
+    </form>
+    <p class="small muted" style="margin-top:16px">Şifrenizi unuttuysanız mağaza yöneticinize ya da Ahmet Erişik'e başvurun.</p>
+  </div></div>`;
+}
+function girisYap(e){
+  e.preventDefault();
+  const k = document.getElementById('lu').value.trim(), s = document.getElementById('lp').value;
+  run(async () => {
+    const j = await call('giris', {kullaniciAdi:k, sifre:s});
+    TOKEN = j.token; lsSet(TKEY, TOKEN); SIFRE_ZORUNLU = !!j.sifreDegistir; VIEW = null; render();
+  });
+}
+function viewSifre(zorunlu){
+  return `<div class="login"><div class="lg">
+    <div class="mark">HALE</div>
+    <h1 style="margin:0 0 4px">${zorunlu ? 'Şifrenizi belirleyin' : 'Şifre değiştir'}</h1>
+    <p class="sub">${zorunlu ? 'İlk girişiniz. Size verilen geçici şifre yerine kendi şifrenizi belirleyin (en az 6 karakter).' : ''}</p>
+    ${sifreForm()}
+    <button class="btn ghost block" style="margin-top:8px" onclick="cikisYap()">Çıkış yap</button>
+  </div></div>`;
+}
+function sifreForm(){
+  return `<form class="f" onsubmit="sifreKaydet(event)">
+      <div class="fld"><label>Mevcut şifre</label><input id="s0" type="password" autocomplete="current-password" required></div>
+      <div class="fld"><label>Yeni şifre</label><input id="s1" type="password" autocomplete="new-password" minlength="6" required></div>
+      <div class="fld"><label>Yeni şifre (tekrar)</label><input id="s2" type="password" autocomplete="new-password" minlength="6" required></div>
+      <button class="btn p block" type="submit">Şifreyi kaydet</button>
+    </form>`;
+}
+function sifreKaydet(e){
+  e.preventDefault();
+  const a = document.getElementById('s0').value, b = document.getElementById('s1').value, c = document.getElementById('s2').value;
+  if (b !== c){ toast('Yeni şifreler aynı değil.','warn'); return; }
+  run(async () => { const j = await call('sifreDegistir', {eski:a, yeni:b}); SIFRE_ZORUNLU = false; closeModal(); toast(esc(j.mesaj),'ok'); render(); });
+}
+function hesabim(){
+  const u = me();
+  modal('Hesabım', `<p class="sub" style="margin-top:-8px"><b>${esc(u.ad)}</b><br>${esc(u.gorev)} · ${esc(u.birim)} · ${esc(ROLLER[u.rol])}</p>
+    <h2>Şifre değiştir</h2>${sifreForm()}<hr><button class="btn bad block" onclick="cikisYap()">${ic('out')} Çıkış yap</button>`);
+}
+function cikisYap(){ const t = TOKEN; if (t) call('cikis', {}, true).catch(()=>{}); oturumBitti(); }
+function girisBilgisi(g, ad){
+  modal('Giriş bilgileri', `<p class="sub" style="margin-top:-8px">${esc(ad||'')} için giriş bilgileri. Bu şifre bir daha gösterilmez; not alıp personele iletin.</p>
+    <div class="calc" style="display:block"><div class="small muted">Kullanıcı adı</div><div style="font-size:22px;font-weight:800">${esc(g.kullaniciAdi)}</div>
+    <div class="small muted" style="margin-top:8px">Geçici şifre</div><div class="num" style="font-size:28px;font-weight:800;letter-spacing:.12em">${esc(g.sifre)}</div></div>
+    <p class="small muted">Personel ilk girişte kendi şifresini belirleyecek.</p>
+    <button class="btn p block" onclick="closeModal()">Tamam</button>`);
+}
+
+/* ---------- İzinlerim (personel) ---------- */
+function viewMine(){
+  const u = me(), b = bakiye(u), rq = api.requestsOf(u.id);
+  const tot = Math.max(b.hak, 1);
+  const w = x => Math.max(0, x/tot*100);
+  const sn = b.sonraki;
+  return `
+    <h1>Merhaba ${esc(u.ad.split(' ')[0])}</h1>
+    <p class="sub">${esc(u.gorev)} · ${esc(u.birim)} · Kıdem ${kidem(u.giris)}</p>
+    <div class="grid g3">
+      <div>
+        <section class="hero">
+          <div class="lbl">Kullanılabilir yıllık izin</div>
+          <div class="big num">${gunTxt(b.kullanilabilir)}<small>gün</small></div>
+          <div class="bar" aria-hidden="true">
+            <i style="width:${w(b.onceki+b.kullanilan)}%;background:rgba(255,255,255,.45)"></i>
+            <i style="width:${w(b.bekleyen)}%;background:#f5c66b"></i>
+            <i style="flex:1;background:#fff"></i>
+          </div>
+          <div class="stats">
+            <div><b class="num">${gunTxt(b.hak)}</b><span>Toplam hakediş</span></div>
+            <div><b class="num">${gunTxt(b.onceki+b.kullanilan)}</b><span>Kullanılan</span></div>
+            <div><b class="num">${gunTxt(b.bekleyen)}</b><span>Onay bekleyen</span></div>
+          </div>
+          ${sn?`<div class="nexthak">${ic('gift',16)} Sonraki hakediş: <b>${fmt(sn.tarih)}</b> · +${sn.gun} gün</div>`:''}
+        </section>
+        <button class="btn p block" style="min-height:52px;font-size:16px;margin-bottom:14px" onclick="formTalep('${u.id}')">${ic('plus')} Yeni izin talebi</button>
+        ${b.hak===0?`<div class="note" style="margin-bottom:14px">İlk yıllık izin hakkınız işe girişinizin 1. yılında (<b>${fmt(sn&&sn.tarih)}</b>) tanımlanacak.</div>`:''}
+      </div>
+      <div class="card">
+        <h2>Taleplerim</h2>
+        ${rq.length ? rq.map(r => reqRow(r, true)).join('') : '<div class="empty">Henüz izin talebiniz yok.</div>'}
+      </div>
+    </div>`;
+}
+const DURUM = {bekliyor:'Onay bekliyor', onaylandi:'Onaylandı', reddedildi:'Reddedildi', iptal:'İptal edildi'};
+function reqRow(r, own, showName){
+  const d = P(r.bas), p = api.person(r.personelId), u = me();
+  return `<div class="req">
+    <div class="dt"><b>${d.getDate()}</b><span>${AYLAR[d.getMonth()]}</span></div>
+    <div class="bd">
+      ${showName?`<div class="t">${esc(p.ad)}</div>`:''}
+      <div class="${showName?'m':'t'}">${fmtK(r.bas)} – ${fmt(r.bit)} · <b class="num">${gunTxt(r.gun)} gün</b></div>
+      <div class="m">İşe dönüş ${fmt(r.donus)} · Onaycı: ${esc((api.person(r.onayciId)||{}).ad||'—')}</div>
+      ${r.kararNotu?`<div class="m" style="margin-top:3px">“${esc(r.kararNotu)}”</div>`:''}
+      <div class="row" style="margin-top:7px">
+        <span class="chip ${r.durum}">${DURUM[r.durum]}</span>
+        ${r.gecmis?'<span class="chip n">Geçmiş kayıt</span>':''}
+        <span class="sp"></span>
+        ${r.durum==='bekliyor' && (own || canManage(u,p)) ? `<button class="btn sm ghost" onclick="geriCek('${r.id}')">Geri çek</button>`:''}
+        ${r.durum==='onaylandi' ? `<button class="btn sm" onclick="yazdir('${r.id}')">${ic('print',16)} İzin formu</button>`:''}
+        ${r.durum==='onaylandi' && u.rol==='admin' && !own ? `<button class="btn sm ghost" onclick="iptalEt('${r.id}')">İptal</button>`:''}
+      </div>
+    </div></div>`;
+}
+function geriCek(id){ if(!confirm('Talep geri çekilsin mi?')) return; run(async () => { const j = await call('geriCek',{id}); closeModal(); toast(esc(j.mesaj),'ok'); render(); }); }
+function iptalEt(id){ const n = prompt('İptal nedeni (izin kullanılmadıysa gün bakiyeye geri eklenir):',''); if(n===null) return; run(async () => { const j = await call('iptal',{id, not:n}); closeModal(); toast(esc(j.mesaj),'ok'); render(); }); }
+
+/* ---------- İzin talep formu ---------- */
+function formTalep(pid){
+  const u = me(), p = api.person(pid), adina = pid !== u.id;
+  const yetkili = adina && canManage(u,p);
+  const ilk = addDays(TODAY_ISO, 7);
+  modal(adina ? `${esc(p.ad)} adına izin` : 'Yeni izin talebi', `
+    <div class="f">
+      <div class="f2">
+        <div class="fld"><label>İzin başlangıcı</label><input type="date" id="fb" value="${ilk}" onchange="talepHesapla('${pid}')"></div>
+        <div class="fld"><label>İzin bitişi (son izin günü)</label><input type="date" id="fe" value="${addDays(ilk,5)}" onchange="talepHesapla('${pid}')"></div>
+      </div>
+      <div class="fld"><label>Haftalık izin günü (bu talep için)</label>
+        <select id="fh" onchange="talepHesapla('${pid}')">${htVar(p.haftaTatili)?'':'<option value="" selected>Seçiniz…</option>'}${GUNLER.map((g,i)=>{const own=htVar(p.haftaTatili)&&i===+p.haftaTatili;return `<option value="${i}" ${own?'selected':''}>${g}${own?' (her zamanki)':''}</option>`;}).join('')}</select>
+        <div class="hint">${htVar(p.haftaTatili)?'Bu dönemde hafta tatili farklı bir güne denk geliyorsa sadece bu talep için değiştirin.':'Haftalık izin günü henüz tanımlanmamış — bu talep için seçin. Kalıcı olarak yöneticiniz personel ayarından belirler.'}</div></div>
+      <div id="fcalc"></div>
+      <div class="fld"><label>Açıklama (isteğe bağlı)</label><textarea id="fa" placeholder="Örn. memleket ziyareti"></textarea></div>
+      ${yetkili?`<label class="chk"><input type="checkbox" id="fo"> Onaycı benim — doğrudan onayla</label>`:''}
+      <button class="btn p block" id="fs" onclick="talepGonder('${pid}')">${yetkili?'Kaydet':'Onaya gönder'}</button>
+      <p class="small muted" style="margin:0">Onaycı: <b>${esc(onayciAdi(p))}</b>${(api.person(p.onayci)||{}).email?' · e-posta ile bilgilendirilir':''}</p>
+    </div>`);
+  talepHesapla(pid);
+}
+function talepHesapla(pid){
+  const p = api.person(pid), b = bakiye(p);
+  const bas = document.getElementById('fb').value, bit = document.getElementById('fe').value, hf = document.getElementById('fh').value;
+  const h = izinHesap(bas, bit, hf), el = document.getElementById('fcalc'), btn = document.getElementById('fs');
+  if (!htVar(hf)){ el.innerHTML = '<div class="note w">İzin gününü doğru hesaplamak için haftalık izin gününü seçin.</div>'; btn.disabled = true; return; }
+  if (h.gecersiz){ el.innerHTML = '<div class="note b">Bitiş tarihi başlangıçtan önce olamaz.</div>'; btn.disabled = true; return; }
+  const cak = S.requests.filter(r => r.personelId===pid && ['bekliyor','onaylandi'].includes(r.durum) && r.bas<=bit && r.bit>=bas);
+  const notes = [];
+  if (cak.length) notes.push(`<div class="note b">Bu tarihlerle çakışan bir izin kaydı var (${fmt(cak[0].bas)} – ${fmt(cak[0].bit)}).</div>`);
+  if (h.gun > b.kullanilabilir) notes.push(`<div class="note w">${ic('warn',16)} Kullanılabilir bakiye <b>${gunTxt(b.kullanilabilir)} gün</b>. Bu talep bakiyeyi aşıyor; onaylanırsa <b>avans izin</b> olarak eksiye düşer.</div>`);
+  if (bas < TODAY_ISO) notes.push(`<div class="note">Geçmiş tarihli kayıt giriliyor.</div>`);
+  if (h.gun > 0 && h.gun < 10) notes.push(`<div class="note small">Bilgi: İzin bölünerek kullanıldığında yönetmeliğe göre bölümlerden biri en az 10 iş günü olmalıdır.</div>`);
+  const det = [];
+  if (h.hafta) det.push(`${h.hafta} hafta tatili`);
+  if (h.tatil.length) det.push(`${h.tatil.length} resmi tatil (${h.tatil.map(s=>TATILLER[s][0]).filter((v,i,a)=>a.indexOf(v)===i).join(', ')})`);
+  if (h.yarim.length) det.push(`${h.yarim.length} arife (yarım gün)`);
+  el.innerHTML = `<div class="calc"><div class="n num">${gunTxt(h.gun)}<small>gün</small></div>
+    <div class="d">düşülecek yıllık izin<br>${det.length?'Sayılmayan: '+det.join(' · ')+'<br>':''}İşe dönüş: <b>${fmt(h.donus)} ${GUNLER[P(h.donus).getDay()]}</b></div></div>
+    ${notes.join('')}`;
+  btn.disabled = !!cak.length || h.gun <= 0;
+}
+function talepGonder(pid){
+  const g = id => document.getElementById(id);
+  const d = {personelId:pid, bas:g('fb').value, bit:g('fe').value, haftaTatili:g('fh').value, aciklama:g('fa').value.trim(), direkt: !!(g('fo') && g('fo').checked)};
+  g('fs').disabled = true;
+  run(async () => {
+    try { const j = await call('talepOlustur', d); closeModal(); toast(esc(j.mesaj),'ok'); render(); }
+    finally { const b = document.getElementById('fs'); if (b) b.disabled = false; }
+  });
+}
+
+/* ---------- Onaylar ---------- */
+function viewOnay(){
+  const u = me();
+  let list = S.requests.filter(r => r.durum==='bekliyor' && (ONAY_TUMU && u.rol==='admin' ? true : r.onayciId===u.id)).sort((a,b)=>a.bas.localeCompare(b.bas));
+  const gecmis = S.requests.filter(r => r.durum!=='bekliyor' && !r.gecmis && r.onayciId===u.id).sort((a,b)=>b.karar.localeCompare(a.karar)).slice(0,8);
+  return `
+    <h1>Onay bekleyen talepler</h1>
+    <p class="sub">${list.length ? list.length+' talep kararınızı bekliyor' : 'Bekleyen talep yok'}</p>
+    ${u.rol==='admin'?`<label class="chk small" style="margin-bottom:12px"><input type="checkbox" ${ONAY_TUMU?'checked':''} onchange="ONAY_TUMU=this.checked;render()"> Tüm birimlerin bekleyen taleplerini göster (yönetici izindeyse vekâleten onay)</label>`:''}
+    <div class="grid g2">
+      <div>${list.length ? list.map(apCard).join('') : `<div class="card empty">${ic('ok',28)}<br>Her şey güncel.</div>`}</div>
+      <div class="card"><h2>Son kararlarım</h2>${gecmis.length ? gecmis.map(r=>reqRow(r,false,true)).join('') : '<div class="empty">Henüz karar verilmiş talep yok.</div>'}</div>
+    </div>`;
+}
+function apCard(r){
+  const p = api.person(r.personelId), b = bakiye(p), c = cakisanlar(r), sonra = b.kalan - r.gun;
+  return `<div class="ap">
+    <div class="hd"><div class="av">${initials(p.ad)}</div><div><b>${esc(p.ad)}</b><div class="small muted">${esc(p.gorev)} · ${esc(p.birim)}</div></div>
+    <span class="sp"></span><span class="chip bekliyor">Bekliyor</span></div>
+    <div class="facts">
+      <div><b class="num">${gunTxt(r.gun)} gün</b><span>${fmtK(r.bas)} – ${fmtK(r.bit)}</span></div>
+      <div><b class="num">${gunTxt(b.kalan)}</b><span>Şu anki bakiye</span></div>
+      <div><b class="num" style="color:${sonra<0?'var(--bad)':'inherit'}">${gunTxt(sonra)}</b><span>Onay sonrası</span></div>
+    </div>
+    <div class="small muted" style="margin-bottom:8px">İşe dönüş ${fmt(r.donus)} · Talep ${fmt(r.olusturma)}${r.olusturan!==r.personelId?' · '+esc(api.person(r.olusturan).ad)+' girdi':''}${r.onayciId!==S.user?' · Onaycı: '+esc(api.person(r.onayciId).ad):''}</div>
+    ${r.aciklama?`<div class="note" style="margin-bottom:8px">“${esc(r.aciklama)}”</div>`:''}
+    ${c.length?`<div class="note w" style="margin-bottom:10px">${ic('warn',16)} Aynı tarihlerde ${esc(p.birim)}'dan izinde: ${c.map(x=>`<b>${esc(api.person(x.personelId).ad)}</b> (${fmtK(x.bas)}–${fmtK(x.bit)}${x.durum==='bekliyor'?', bekliyor':''})`).join(', ')}</div>`:''}
+    ${sonra<0?`<div class="note b" style="margin-bottom:10px">Bakiye yetersiz — onaylanırsa ${gunTxt(-sonra)} gün avans izin olur.</div>`:''}
+    <textarea id="n_${r.id}" placeholder="Not (isteğe bağlı, red için önerilir)"></textarea>
+    <div class="row"><button class="btn bad" style="flex:1" onclick="karar('${r.id}','reddedildi')">Reddet</button>
+    <button class="btn ok" style="flex:2" onclick="karar('${r.id}','onaylandi')">${ic('ok')} Onayla</button></div>
+  </div>`;
+}
+function karar(id, d){
+  const n = document.getElementById('n_'+id).value.trim();
+  if (d === 'reddedildi' && !confirm('Talep reddedilsin mi?')) return;
+  run(async () => { const j = await call('karar', {id, durum:d, not:n}); toast(esc(j.mesaj), d==='onaylandi'?'ok':'x'); render(); });
+}
+
+/* ---------- Ekibim (birim yöneticisi) ---------- */
+function viewEkip(){
+  const u = me();
+  const ekip = S.people.filter(p => p.aktif && p.izinTakip && p.onayci === u.id).sort((a,b)=>a.ad.localeCompare(b.ad,'tr'));
+  return `<h1>Ekibim</h1><p class="sub">İzinlerini sizin onayladığınız ${ekip.length} kişi. Bir kişiye dokunun: detay, izin geçmişi ve adına talep girme.</p>
+    <div class="card pl">${plHead()}${ekip.map(plRow).join('') || '<div class="empty">Ekip üyesi yok.</div>'}</div>`;
+}
+function plHead(){ return `<div class="ph"><div>Personel</div><div>Birim</div><div>Görev</div><div>Giriş</div><div class="r">Hak</div><div class="r">Kull.</div><div class="r">Kalan</div><div>Sonraki hakediş</div></div>`; }
+function plRow(p){
+  const b = bakiye(p), sn = b.sonraki;
+  return `<div class="pr" onclick="detay('${p.id}')">
+    <div class="c-n">${esc(p.ad)} ${izindeMi(p)?'<span class="chip onaylandi">İzinde</span>':''}</div>
+    <div class="c-meta">${esc(p.birim)} · ${esc(p.gorev)} · ${kidem(p.giris)}${b.bekleyen?` · <span style="color:var(--warn)">${gunTxt(b.bekleyen)} gün bekliyor</span>`:''}</div>
+    <div class="hide-m small">${esc(p.birim)}</div>
+    <div class="hide-m small">${esc(p.gorev)}</div>
+    <div class="hide-m small num">${fmt(p.giris)}</div>
+    <div class="hide-m r num">${gunTxt(b.hak)}</div>
+    <div class="hide-m r num">${gunTxt(b.onceki+b.kullanilan)}</div>
+    <div class="c-k r num"><b style="color:${b.kalan<0?'var(--bad)':'inherit'}">${gunTxt(b.kalan)}</b><span>gün kalan</span></div>
+    <div class="hide-m small">${sn?fmt(sn.tarih)+' · +'+sn.gun:'—'}</div>
+  </div>`;
+}
+
+/* ---------- Haftalık izin günü: hızlı düzenleme ---------- */
+function htSelect(p){
+  return `<select class="htsel ${htVar(p.haftaTatili)?'':'unset'}" onclick="event.stopPropagation()" onchange="htKaydet('${p.id}',this.value)" aria-label="${esc(p.ad)} haftalık izin günü">
+    ${htVar(p.haftaTatili)?'':'<option value="" selected>Belirlenmedi</option>'}${GUNLER.map((g,i)=>`<option value="${i}" ${htVar(p.haftaTatili)&&i===+p.haftaTatili?'selected':''}>${g}</option>`).join('')}</select>`;
+}
+function htKaydet(pid, v){
+  run(async () => {
+    await call('haftaTatili', {personelId:pid, deger:v});
+    const p = api.person(pid);
+    toast(`${esc(p.ad)} · haftalık izin günü: <b>${htAd(p.haftaTatili)}</b>. Yeni talepler buna göre hesaplanır; geçmiş izinler değişmez.`,'ok');
+    if (document.getElementById('ov')) { closeModal(); detay(pid); }
+    render();
+  });
+}
+
+/* ---------- Personel detayı ---------- */
+function detay(pid){
+  const p = api.person(pid), b = bakiye(p), u = me(), rq = api.requestsOf(pid);
+  modal(esc(p.ad), `
+    <p class="sub" style="margin-top:-8px">${esc(p.gorev)} · ${esc(p.birim)} · Giriş ${fmt(p.giris)} · Kıdem ${kidem(p.giris)}${p.dogum?' · '+yas(p.dogum,TODAY)+' yaş':''}<br>
+    Onaycı: ${esc(onayciAdi(p))}${p.email?' · '+esc(p.email):' · e-posta yok'}${!p.aktif?' · <b>Ayrıldı'+(p.cikis?' '+fmt(p.cikis):'')+'</b>':''}</p>
+    ${p.izinTakip ? `<div class="row" style="margin-bottom:12px;background:var(--bg);border-radius:12px;padding:8px 12px">
+      <span class="small"><b>Haftalık izin günü</b></span><span class="sp"></span>
+      ${canManage(u,p) ? htSelect(p) : `<span class="${htVar(p.haftaTatili)?'':'chip flag'}">${htAd(p.haftaTatili)}</span>`}
+    </div>`:''}
+    <div class="ap" style="padding:0;border:0"><div class="facts" style="margin-top:0;grid-template-columns:repeat(4,1fr)">
+      <div><b class="num">${gunTxt(b.hak)}</b><span>Hakediş</span></div>
+      <div><b class="num">${gunTxt(b.onceki+b.kullanilan)}</b><span>Kullanılan</span></div>
+      <div><b class="num">${gunTxt(b.bekleyen)}</b><span>Bekleyen</span></div>
+      <div><b class="num" style="color:${b.kalan<0?'var(--bad)':'var(--navy)'}">${gunTxt(b.kalan)}</b><span>Kalan</span></div>
+    </div></div>
+    ${!p.acilisKontrol && b.hak>0 && u.rol==='admin' ? `<div class="note w" style="margin-bottom:12px">Sisteme geçiş öncesi kullanılan izin henüz girilmedi. Bakiye bu yüzden olduğundan yüksek görünebilir.</div>`:''}
+    ${p.not && u.rol==='admin' ? `<div class="note" style="margin-bottom:12px"><b>Kontrol:</b> ${esc(p.not)}</div>`:''}
+    <div class="row" style="margin-bottom:12px">
+      ${p.aktif && p.izinTakip && canManage(u,p) ? `<button class="btn p" onclick="formTalep('${p.id}')">${ic('plus')} Adına izin gir</button>`:''}
+      ${u.rol==='admin' ? `<button class="btn" onclick="duzenle('${p.id}')">${ic('edit')} Düzenle</button>`:''}
+    </div>
+    <h2>Hakediş geçmişi</h2>
+    <table class="tbl"><thead><tr><th>Yıl</th><th>Hakediş tarihi</th><th>Dayanak</th><th class="r">Gün</th></tr></thead><tbody>
+      ${b.hk.map(h=>`<tr><td>${h.k}. yıl</td><td class="num">${fmt(h.tarih)}</td><td class="small">${h.neden}</td><td class="r num"><b>${h.gun}</b></td></tr>`).join('')}
+      ${b.sonraki?`<tr style="color:var(--muted)"><td>${b.sonraki.k}. yıl</td><td class="num">${fmt(b.sonraki.tarih)}</td><td class="small">${b.sonraki.neden} (gelecek)</td><td class="r num">${b.sonraki.gun}</td></tr>`:''}
+      ${b.onceki?`<tr><td colspan="3">Sisteme geçiş öncesi kullanılan</td><td class="r num">−${gunTxt(b.onceki)}</td></tr>`:''}
+    </tbody></table>
+    <h2 style="margin-top:18px">İzin geçmişi</h2>
+    ${rq.length ? rq.map(r=>reqRow(r,false)).join('') : '<div class="empty">Kayıt yok.</div>'}
+  `);
+}
+
+/* ---------- Panel (admin) ---------- */
+function viewPanel(){
+  const aktif = S.people.filter(p => p.aktif && p.izinTakip);
+  const B = new Map(aktif.map(p => [p.id, bakiye(p)]));
+  const bek = S.requests.filter(r=>r.durum==='bekliyor');
+  const izinde = aktif.filter(izindeMi);
+  const toplamKalan = [...B.values()].reduce((s,b)=>s+b.kalan,0);
+  const in60 = addDays(TODAY_ISO, 60), in30 = addDays(TODAY_ISO, 30);
+  const yaklasanHak = aktif.map(p=>({p, s:B.get(p.id).sonraki})).filter(x=>x.s && x.s.tarih<=in60).sort((a,b)=>a.s.tarih.localeCompare(b.s.tarih));
+  const yaklasanIzin = S.requests.filter(r=>r.durum==='onaylandi' && r.bit>=TODAY_ISO && r.bas<=in30).sort((a,b)=>a.bas.localeCompare(b.bas));
+  const acilisEksik = aktif.filter(p => !p.acilisKontrol && B.get(p.id).hak > 0);
+  const htEksik = aktif.filter(p => !htVar(p.haftaTatili));
+  const cikisEksik = S.people.filter(p => !p.aktif && !p.cikis);
+  const kontrol = [
+    ...(htEksik.length ? [{t:`${htEksik.length} personelin haftalık izin günü belirlenmedi`, d:'Personel ekranında her satırdan seçebilirsiniz.', a:"go('personel')"}] : []),
+    ...cikisEksik.map(p => ({t:p.ad, d:'Ayrıldı — işten çıkış tarihi girilmedi (kalan izin ücreti hesabı için gerekli).', a:`duzenle('${p.id}')`})),
+    ...S.people.filter(p => p.aktif && p.not).map(p => ({t:p.ad, d:p.not, a:`duzenle('${p.id}')`}))
+  ];
+  // birim bazlı kalan
+  const birimler = BIRIMLER.filter(b => aktif.some(p=>p.birim===b));
+  const bk = birimler.map(b => ({b, v: aktif.filter(p=>p.birim===b).reduce((s,p)=>s+B.get(p.id).kalan,0), n: aktif.filter(p=>p.birim===b).length}));
+  const mx = Math.max(1, ...bk.map(x=>x.v));
+  // tablo
+  let rows = aktif.filter(p => (PANEL_F.birim==='TÜMÜ' || p.birim===PANEL_F.birim) && p.ad.toLocaleLowerCase('tr').includes(PANEL_F.q.toLocaleLowerCase('tr')));
+  rows.sort(PANEL_F.sirala==='kalan' ? (a,b)=>B.get(b.id).kalan-B.get(a.id).kalan : PANEL_F.sirala==='giris' ? (a,b)=>a.giris.localeCompare(b.giris) : (a,b)=>a.ad.localeCompare(b.ad,'tr'));
+  return `
+    <h1>İzin Paneli</h1>
+    <p class="sub">${fmt(TODAY_ISO)} itibarıyla · Hakedişler işe giriş yıl dönümlerinde otomatik eklenir</p>
+    ${acilisEksik.length?`<div class="note w" style="margin-bottom:14px">${ic('warn',16)} <b>${acilisEksik.length} personelin</b> sisteme geçiş öncesi kullandığı izin henüz girilmedi; şu an tüm hakedişleri kullanılmamış görünüyor. Personel ekranından “Önceki kullanım” alanını doldurun.</div>`:''}
+    <div class="kpis">
+      <div class="kpi"><div class="l">Aktif personel</div><div class="v num">${aktif.length}</div><div class="h">izin takibinde</div></div>
+      <div class="kpi click" onclick="ONAY_TUMU=true;go('onay')"><div class="l">Onay bekleyen</div><div class="v num">${bek.length}<small>talep</small></div><div class="h">${gunTxt(bek.reduce((s,r)=>s+r.gun,0))} gün</div></div>
+      <div class="kpi"><div class="l">Bugün izinde</div><div class="v num">${izinde.length}</div><div class="h">${izinde.map(p=>esc(p.ad.split(' ')[0])).join(', ')||'—'}</div></div>
+      <div class="kpi"><div class="l">Toplam kalan izin</div><div class="v num">${gunTxt(toplamKalan)}<small>gün</small></div><div class="h">kullanılmamış bakiye</div></div>
+    </div>
+    <div class="grid g2">
+      <div class="card"><h2>Birim bazında kalan izin (gün)</h2>
+        <div class="hb">${bk.map(x=>`<div>${esc(x.b)} <span class="muted small">(${x.n})</span></div><div class="tr"><div class="fill" style="width:${x.v/mx*100}%" title="${esc(x.b)}: ${gunTxt(x.v)} gün kalan, ${x.n} personel"></div></div><div class="v num">${gunTxt(x.v)}</div>`).join('')}</div>
+      </div>
+      <div class="card"><h2>Yaklaşan izinler (30 gün)</h2>
+        ${yaklasanIzin.length?yaklasanIzin.map(r=>reqRow(r,false,true)).join(''):'<div class="empty">Önümüzdeki 30 günde onaylı izin yok.</div>'}
+      </div>
+      <div class="card"><h2>Yaklaşan hakedişler (60 gün)</h2>
+        ${yaklasanHak.length?`<table class="tbl"><tbody>${yaklasanHak.map(x=>`<tr style="cursor:pointer" onclick="detay('${x.p.id}')"><td><b>${esc(x.p.ad)}</b><div class="small muted">${esc(x.p.birim)} · ${x.s.k}. yıl</div></td><td class="num">${fmt(x.s.tarih)}</td><td class="r num"><b>+${x.s.gun}</b></td></tr>`).join('')}</tbody></table>`:'<div class="empty">60 gün içinde hakediş yok.</div>'}
+      </div>
+      <div class="card"><h2>Kontrol edilmesi gerekenler</h2>
+        ${kontrol.length?`<table class="tbl"><tbody>${kontrol.map(k=>`<tr style="cursor:pointer" onclick="${k.a}"><td><b>${esc(k.t)}</b><div class="small muted">${esc(k.d)}</div></td></tr>`).join('')}</tbody></table>`:'<div class="empty">Her şey tamam.</div>'}
+      </div>
+    </div>
+    <div class="card">
+      <div class="row" style="margin-bottom:10px"><h2 style="margin:0">Tüm personel bakiyeleri</h2><span class="sp"></span>
+        <button class="btn sm" onclick="excelAl()">${ic('dl',16)} Excel'e aktar</button></div>
+      <div class="filters">
+        <div class="seg">${['TÜMÜ',...birimler].map(b=>`<button class="${PANEL_F.birim===b?'on':''}" onclick="PANEL_F.birim='${b}';render()">${b==='TÜMÜ'?'Tümü':esc(b)}</button>`).join('')}</div>
+        <input class="search" placeholder="İsim ara…" value="${esc(PANEL_F.q)}" oninput="PANEL_F.q=this.value;tabloYenile()">
+        <select class="search" style="flex:0 0 auto;min-width:0" onchange="PANEL_F.sirala=this.value;render()">
+          <option value="ad" ${PANEL_F.sirala==='ad'?'selected':''}>İsme göre</option><option value="kalan" ${PANEL_F.sirala==='kalan'?'selected':''}>Kalan izne göre</option><option value="giris" ${PANEL_F.sirala==='giris'?'selected':''}>Kıdeme göre</option></select>
+      </div>
+      <div class="pl" id="ptbl">${plHead()}${rows.map(plRow).join('')||'<div class="empty">Sonuç yok.</div>'}</div>
+    </div>
+    <details class="card"><summary style="cursor:pointer;font-weight:650">Resmi tatil takvimi (izinden düşülmeyen günler)</summary>
+      <table class="tbl" style="margin-top:10px"><tbody>${Object.entries(TATILLER).map(([d,[a,y]])=>`<tr><td class="num">${fmt(d)}</td><td>${GUNLER[P(d).getDay()]}</td><td>${a}${y?' <span class="chip n">yarım gün</span>':''}</td></tr>`).join('')}</tbody></table>
+    </details>`;
+}
+function tabloYenile(){
+  const pos = document.activeElement && document.activeElement.selectionStart;
+  render(); const s = document.querySelector('.search'); if (s){ s.focus(); try{ s.setSelectionRange(pos,pos); }catch(e){} }
+}
+function excelAl(){
+  const head = ['Ad Soyad','Birim','Görev','İşe Giriş','Kıdem','Hafta Tatili','Toplam Hakediş','Önceki Kullanım','Onaylı Kullanım','Bekleyen','Kalan','Sonraki Hakediş','Sonraki Gün','Onaycı'];
+  const rows = S.people.filter(p=>p.aktif&&p.izinTakip).map(p=>{ const b=bakiye(p); return [p.ad,p.birim,p.gorev,fmt(p.giris),kidem(p.giris),htAd(p.haftaTatili),b.hak,b.onceki,b.kullanilan,b.bekleyen,b.kalan,b.sonraki?fmt(b.sonraki.tarih):'',b.sonraki?b.sonraki.gun:'',onayciAdi(p)]; });
+  const cell = v => typeof v === 'number' ? String(v).replace('.',',') : `"${String(v).replace(/"/g,'""')}"`;
+  const csv = '﻿'+[head,...rows].map(r=>r.map(cell).join(';')).join('\r\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})); a.download = `yillik-izin-bakiyeleri-${TODAY_ISO}.csv`; document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* ---------- Personel yönetimi (admin) ---------- */
+function viewPersonel(){
+  const list = S.people.filter(p => p.aktif === PERS_F.aktif && p.ad.toLocaleLowerCase('tr').includes(PERS_F.q.toLocaleLowerCase('tr'))).sort((a,b)=>BIRIMLER.indexOf(a.birim)-BIRIMLER.indexOf(b.birim) || a.ad.localeCompare(b.ad,'tr'));
+  const n = {a:S.people.filter(p=>p.aktif).length, p:S.people.filter(p=>!p.aktif).length};
+  return `<div class="row"><div><h1>Personel</h1><p class="sub">İşe giren personeli ekleyin, ayrılanı pasife alın. Kayıtlar silinmez.</p></div><span class="sp"></span>
+    <button class="btn p" onclick="duzenle()">${ic('plus')} Personel ekle</button></div>
+    <div class="filters">
+      <div class="seg"><button class="${PERS_F.aktif?'on':''}" onclick="PERS_F.aktif=true;render()">Aktif (${n.a})</button><button class="${!PERS_F.aktif?'on':''}" onclick="PERS_F.aktif=false;render()">Ayrılanlar (${n.p})</button></div>
+      <input class="search" placeholder="İsim ara…" value="${esc(PERS_F.q)}" oninput="PERS_F.q=this.value;tabloYenile()">
+    </div>
+    <div class="card">
+      ${list.map(p => { const b = p.izinTakip ? bakiye(p) : null; return `<div class="req" style="cursor:pointer" onclick="duzenle('${p.id}')">
+        <div class="dt" style="background:var(--bg);color:var(--ink-2);display:grid;place-items:center;height:44px;font-weight:800">${initials(p.ad)}</div>
+        <div class="bd"><div class="t">${esc(p.ad)}</div>
+          <div class="m">${esc(p.birim)} · ${esc(p.gorev)}${p.giris?' · Giriş '+fmt(p.giris):''}${p.cikis?' · Çıkış '+fmt(p.cikis):''} · Onaycı: ${esc(onayciAdi(p))}</div>
+          <div class="row" style="margin-top:5px;gap:6px">
+            ${p.aktif && p.izinTakip ? `<span class="small muted">Hafta tatili</span>${htSelect(p)}` : ''}
+            <span class="chip n">${ROLLER[p.rol]}</span>
+            ${!p.email?'<span class="chip n">E-posta yok</span>':''}
+            ${p.aktif && !p.sonGiris?'<span class="chip n">Henüz giriş yapmadı</span>':''}
+            ${p.izinTakip && !p.acilisKontrol && b.hak>0?'<span class="chip flag">Önceki kullanım girilmedi</span>':''}
+            ${p.not?'<span class="chip flag">Kontrol et</span>':''}
+            ${!p.aktif && !p.cikis?'<span class="chip flag">Çıkış tarihi girilmedi</span>':''}
+            ${!p.aktif && b?`<span class="chip ${b.kalan>0?'bekliyor':'n'}">Çıkışta kalan izin: ${gunTxt(b.kalan)} gün</span>`:''}
+          </div></div></div>`; }).join('') || '<div class="empty">Kayıt yok.</div>'}
+    </div>`;
+}
+function duzenle(pid){
+  const yeni = !pid, p = yeni ? {id:'', ad:'', gorev:'Satış Danışmanı', birim:'OPTIMALL', dogum:'', giris:TODAY_ISO, email:'', rol:'personel', onayci:'hacer', haftaTatili:null, izinTakip:true, oncekiKullanim:0, acilisKontrol:true, aktif:true, cikis:'', not:''} : {...api.person(pid)};
+  const onaycilar = S.people.filter(x => x.aktif && ['admin','yonetici','onayci'].includes(x.rol) && x.id !== p.id);
+  const b = !yeni && p.izinTakip ? bakiye(p) : null;
+  modal(yeni ? 'Yeni personel' : 'Personeli düzenle', `
+    <div class="f">
+      <div class="fld"><label>Ad Soyad</label><input id="e_ad" value="${esc(p.ad)}" placeholder="Örn. Ayşe Yılmaz"></div>
+      ${!yeni && !p.aktif ? `<div class="fld"><label>İşten çıkış tarihi</label><input type="date" id="e_cikis2" value="${p.cikis||''}"><div class="hint">Hakediş bu tarihe kadar hesaplanır; çıkışta ödenecek kalan izin ücretine esas.</div></div>`:''}
+      <div class="f2">
+        <div class="fld"><label>Birim</label><select id="e_birim" onchange="if(${yeni})document.getElementById('e_onayci').value=BIRIM_YONETICI[this.value]||'ahmet'">${BIRIMLER.map(b=>`<option ${b===p.birim?'selected':''}>${b}</option>`).join('')}</select></div>
+        <div class="fld"><label>Görev</label><input id="e_gorev" value="${esc(p.gorev)}" list="gorevler"><datalist id="gorevler">${['Satış Danışmanı','Satış Şefi','Çay ve Temizlik','Depocu','Sevkiyatçı','Muhasebe','Planlama Uzmanı'].map(g=>`<option>${g}</option>`).join('')}</datalist></div>
+      </div>
+      <div class="f2">
+        <div class="fld"><label>İşe giriş tarihi</label><input type="date" id="e_giris" value="${p.giris}"></div>
+        <div class="fld"><label>Doğum tarihi</label><input type="date" id="e_dogum" value="${p.dogum}"><div class="hint">18 yaş altı / 50 yaş üstü için en az 20 gün kuralı.</div></div>
+      </div>
+      <div class="fld"><label>E-posta</label><input type="email" id="e_email" value="${esc(p.email)}" placeholder="ad.soyad@halemobilya.com.tr"><div class="hint">Boş bırakılabilir (mavi yaka). Bildirimler uygulama içinde görünür.</div></div>
+      <div class="f2">
+        <div class="fld"><label>Haftalık izin günü</label><select id="e_ht"><option value="" ${htVar(p.haftaTatili)?'':'selected'}>Belirlenmedi</option>${GUNLER.map((g,i)=>`<option value="${i}" ${htVar(p.haftaTatili)&&i===+p.haftaTatili?'selected':''}>${g}</option>`).join('')}</select></div>
+        <div class="fld"><label>İzinleri onaylayan</label><select id="e_onayci">${onaycilar.map(o=>`<option value="${o.id}" ${o.id===p.onayci?'selected':''}>${esc(o.ad)}</option>`).join('')}</select></div>
+      </div>
+      <div class="f2">
+        <div class="fld"><label>Rol</label><select id="e_rol">${Object.entries(ROLLER).map(([k,v])=>`<option value="${k}" ${k===p.rol?'selected':''}>${v}</option>`).join('')}</select></div>
+        <div class="fld"><label>Sisteme geçiş öncesi kullanılan izin (gün)</label><input type="number" step="0.5" min="0" id="e_onceki" value="${p.oncekiKullanim||0}"></div>
+      </div>
+      <label class="chk"><input type="checkbox" id="e_acilis" ${p.acilisKontrol?'checked':''}> Önceki kullanım kontrol edildi</label>
+      <label class="chk"><input type="checkbox" id="e_takip" ${p.izinTakip?'checked':''}> Yıllık izin takibi yapılsın</label>
+      <div class="fld"><label>Not</label><textarea id="e_not" placeholder="İç not">${esc(p.not)}</textarea></div>
+      <button class="btn p block" onclick="personelKaydet('${p.id}')">Kaydet</button>
+      ${!yeni ? `<div class="row note" style="margin-top:4px"><div><b>Kullanıcı adı:</b> ${esc(p.kullaniciAdi||'—')}<br><span class="small">${p.sonGiris?'Son giriş: '+esc(p.sonGiris):'Henüz giriş yapmadı'}${p.sifreDegisti?'':' · geçici şifre'}</span></div><span class="sp"></span>
+        ${p.aktif?`<button class="btn sm" onclick="sifreSifirla('${p.id}')">Şifre sıfırla</button>`:''}</div>`:''}
+      ${!yeni && p.aktif ? `<hr><div class="fld"><label>İşten çıkış tarihi</label><input type="date" id="e_cikis" value="${TODAY_ISO}"></div>
+        ${b?`<div class="note" style="margin:10px 0">Bugün itibarıyla kullanılmamış izin: <b>${gunTxt(b.kalan)} gün</b>. İş sözleşmesi sona erdiğinde kullanılmayan izin ücreti ödenmelidir (md. 59).</div>`:''}
+        <button class="btn bad block" onclick="pasifAl('${p.id}')">Pasife al (işten ayrıldı)</button>`:''}
+      ${!yeni && !p.aktif ? `<hr><button class="btn block" onclick="aktifAl('${p.id}')">Tekrar aktif yap</button>`:''}
+    </div>`);
+}
+function personelKaydet(pid){
+  const g = id => document.getElementById(id);
+  const ad = g('e_ad').value.trim(); if (!ad){ alert('Ad Soyad gerekli.'); return; }
+  if (!g('e_giris').value){ alert('İşe giriş tarihi gerekli.'); return; }
+  const eski = pid ? api.person(pid) : {aktif:true, cikis:''};
+  const p = {...eski, id: pid || '', ad, birim:g('e_birim').value, gorev:g('e_gorev').value.trim(), giris:g('e_giris').value, dogum:g('e_dogum').value,
+    email:g('e_email').value.trim(), haftaTatili:htVar(g('e_ht').value)?+g('e_ht').value:null, cikis: g('e_cikis2') ? g('e_cikis2').value : eski.cikis,
+    onayci:g('e_onayci').value, rol:g('e_rol').value, oncekiKullanim:+String(g('e_onceki').value).replace(',','.')||0,
+    acilisKontrol:g('e_acilis').checked, izinTakip:g('e_takip').checked, not:g('e_not').value.trim()};
+  personelGonder(p);
+}
+function personelGonder(p){
+  run(async () => {
+    const j = await call('personelKaydet', {personel:p});
+    closeModal(); toast(esc(j.mesaj),'ok'); render();
+    if (j.yeniGiris) girisBilgisi(j.yeniGiris, p.ad);
+  });
+}
+function pasifAl(pid){
+  const c = document.getElementById('e_cikis').value; if(!c){ alert('Çıkış tarihi gerekli.'); return; }
+  const p = api.person(pid); if (!confirm(`${p.ad} ${fmt(c)} tarihiyle pasife alınsın mı? Uygulamaya girişi kapanır.`)) return;
+  personelGonder({...p, aktif:false, cikis:c});
+}
+function aktifAl(pid){ const p = api.person(pid); personelGonder({...p, aktif:true, cikis:''}); }
+function sifreSifirla(pid){
+  const p = api.person(pid); if (!confirm(`${p.ad} için yeni geçici şifre oluşturulsun mu? Eski şifresi geçersiz olur.`)) return;
+  run(async () => { const j = await call('sifreSifirla', {personelId:pid}); closeModal(); render(); girisBilgisi(j.yeniGiris, p.ad); });
+}
+
+/* ---------- Yazdırılabilir izin formu ---------- */
+function yazdir(rid){
+  const r = S.requests.find(x=>x.id===rid), p = api.person(r.personelId), o = api.person(r.onayciId) || {}, b = bakiye(p);
+  const h = izinHesap(r.bas, r.bit, r.haftaTatili);
+  const sonHak = b.hk.filter(x=>x.tarih<=r.bas).pop();
+  const sayilmayan = r.gecmis ? 'Sisteme geçiş öncesi kayıt — günler listelendiği şekliyle işlendi' : [h.hafta?`${h.hafta} gün hafta tatili`:'', h.tatil.length?`${h.tatil.length} gün resmi tatil`:'', h.yarim.length?`${h.yarim.length} arife (yarım gün)`:''].filter(Boolean).join(', ') || '—';
+  document.getElementById('print').innerHTML = `<div class="pf">
+    <div class="ph"><div class="w">HALE MOBİLYA</div><div class="c">Hale Mobilya ve Dayanıklı Tüketim Malları<br>Ticaret Limited Şirketi</div></div>
+    <h3>YILLIK ÜCRETLİ İZİN FORMU</h3>
+    <div class="no">Form No: ${r.id} · Düzenleme tarihi: ${fmt(TODAY_ISO)}</div>
+    <div class="sec">PERSONEL BİLGİLERİ</div>
+    <table>
+      <tr><th>Adı Soyadı</th><td>${esc(p.ad)}</td></tr>
+      <tr><th>Görevi / Birimi</th><td>${esc(p.gorev)} / ${esc(p.birim)}</td></tr>
+      <tr><th>İşe giriş tarihi</th><td>${fmt(p.giris)} (kıdem: ${kidem(p.giris, P(r.bas))})</td></tr>
+      <tr><th>İzne hak kazandığı son tarih</th><td>${sonHak?fmt(sonHak.tarih)+' — '+sonHak.k+'. yıl, '+sonHak.gun+' gün':'—'}</td></tr>
+    </table>
+    <div class="sec">İZİN BİLGİLERİ</div>
+    <table>
+      <tr><th>İzin başlangıç tarihi</th><td>${fmt(r.bas)} ${GUNLER[P(r.bas).getDay()]}</td></tr>
+      <tr><th>İzin bitiş tarihi</th><td>${fmt(r.bit)} ${GUNLER[P(r.bit).getDay()]}</td></tr>
+      <tr><th>İşe başlama tarihi</th><td>${fmt(r.donus)} ${GUNLER[P(r.donus).getDay()]}</td></tr>
+      <tr><th>Kullanılan yıllık izin</th><td><b>${gunTxt(r.gun)} gün</b></td></tr>
+      <tr><th>İzinden sayılmayan günler</th><td>${sayilmayan}</td></tr>
+      <tr><th>Toplam hakediş / kullanılan / kalan*</th><td>${gunTxt(b.hak)} / ${gunTxt(b.onceki+b.kullanilan)} / ${gunTxt(b.kalan)} gün</td></tr>
+      <tr><th>İzin süresince adres ve telefon</th><td style="height:40px"></td></tr>
+    </table>
+    <div class="sig">
+      <div><b>İzni Talep Eden</b>${esc(p.ad)}<br>Tarih: ${fmt(r.olusturma)}<br><br>İmza:</div>
+      <div><b>Onaylayan Yönetici</b>${esc(o.ad||'')}<br>Onay: ${fmt(r.karar)}<br><span style="font-size:8.5pt;color:#555">Sistem üzerinden elektronik olarak onaylanmıştır.</span><br>İmza:</div>
+      <div><b>İşveren / Yetkili</b>Hale Mobilya<br><br><br>Kaşe / İmza:</div>
+    </div>
+    <div class="lgl">* ${fmt(TODAY_ISO)} itibarıyla bu izin dahil bakiye. Bu form 4857 sayılı İş Kanunu md. 53–56 ve Yıllık Ücretli İzin Yönetmeliği uyarınca düzenlenmiş olup personel özlük dosyasında saklanır. Hafta tatili ve resmi tatil günleri yıllık izin süresinden sayılmamıştır.</div>
+  </div>`;
+  window.print();
+}
+
+/* ---------- Başlangıç ---------- */
+async function boot(){
+  TOKEN = lsGet(TKEY);
+  if (!TOKEN || !apiHazir()){ render(); return; }
+  document.getElementById('app').innerHTML = '<div class="login"><div class="lg" style="text-align:center"><div class="mark" style="margin:0 auto 14px">HALE</div><p class="muted">Yükleniyor…</p></div></div>';
+  try { await call('veri', {}, true); } catch(e){ TOKEN = null; lsSet(TKEY, null); }
+  render();
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && TOKEN && S.user && Date.now() - SON_YUKLEME > 60000 && !document.getElementById('ov'))
+    call('veri', {}, true).then(render).catch(()=>{});
+});
+boot();
+</script>
+</body>
+</html>
